@@ -7,7 +7,7 @@ mkdir -p "$HOME/certs"
 echo "$IOS_P12_BASE64" | base64 --decode > "$HOME/certs/cert.p12"
 
 # create and unlock a keychain for CI
-KEYCHAIN_PATH="$HOME/Library/Keychains/build.keychain"
+KEYCHAIN_PATH="$HOME/Library/Keychains/build.keychain-db"
 security create-keychain -p "" "$KEYCHAIN_PATH" || true
 security import "$HOME/certs/cert.p12" -k "$KEYCHAIN_PATH" -P "$IOS_P12_PASSWORD" -T /usr/bin/codesign || true
 security list-keychains -s "$KEYCHAIN_PATH" || true
@@ -19,3 +19,7 @@ mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
 echo "$IOS_PROVISIONING_BASE64" | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/app.mobileprovision"
 
 echo "Certificates and provisioning profile installed." 
+echo "Installed identities:"
+security find-identity -v -p codesigning || true
+echo "Provisioning profiles:"
+ls -l "$HOME/Library/MobileDevice/Provisioning Profiles" || true
